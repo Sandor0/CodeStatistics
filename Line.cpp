@@ -20,11 +20,11 @@ std::string trim(std::string s, const std::string& delimiters = " \f\n\r\t\v" )
 
 Line::Line()
 {
-	//ctor
+	m_isInMultilineComment = false;
 }
 Line::Line(std::string line) : m_chars(line)
 {
-	//ctor
+	m_isInMultilineComment = false;
 }
 
 Line::~Line()
@@ -36,39 +36,46 @@ void Line::setLanguage(std::string languageExtension)
 {
 	m_languageExtension = languageExtension;
 }
-bool Line::analyseLine(bool inMultilineComment)	/// return true if in multiline comment
+void Line::analyseLine(Line *previousLine)
 {
+	bool inMultilineComment = previousLine != NULL ? previousLine->isInMultilineComment() : false;
+
 	std::string multilineTag = inMultilineComment ? "*/" : "/*";
 	std::string trimedLine = trim(m_chars);
+
 	int tagPosition = inMultilineComment ? trimedLine.size()-2 : 0;
-	unsigned int comment = trimedLine.find("//");
-	unsigned int multilineComment = trimedLine.find(multilineTag);
+	unsigned int simpleCommentPosition = trimedLine.find("//");
+	unsigned int multilineCommentPosition = trimedLine.find(multilineTag);
+
 	if(trimedLine.empty())
 	{
 		m_type = EMPTY;
-		return inMultilineComment;
+		m_isInMultilineComment = inMultilineComment;
+		return;
 	}
-	else if(multilineComment != trimedLine.npos)
+	else if(multilineCommentPosition != trimedLine.npos)
 	{
-		if(multilineComment == tagPosition)
+		if(multilineCommentPosition == tagPosition)
 			m_type = COMMENT;
 		else
 			m_type = CODE_AND_COMMENT;
-		return !inMultilineComment;
+		m_isInMultilineComment = !inMultilineComment;
+		return;
 	}
 	else if(inMultilineComment)
 		m_type = COMMENT;
-	else if(comment != trimedLine.npos)
+	else if(simpleCommentPosition != trimedLine.npos)
 	{
-		if(comment == 0)
+		if(simpleCommentPosition == 0)
 			m_type = COMMENT;
 		else
 			m_type = CODE_AND_COMMENT;
-		return inMultilineComment;
+		m_isInMultilineComment = inMultilineComment;
+		return;
 	}
 	else
 		m_type = CODE;
-	return inMultilineComment;
+	m_isInMultilineComment = inMultilineComment;
 }
 
 int Line::getType() const
@@ -80,4 +87,9 @@ char Line::operator[](int i)
 {
 	if(i >= 0 && i < m_chars.size())
 		return m_chars[i];
+}
+
+bool Line::isInMultilineComment() const
+{
+	return m_isInMultilineComment;
 }

@@ -20,11 +20,13 @@ void File::analyseFile()
 {
 	std::map<int, int> stats;
 	this->getLines();
-	bool inMultilineComment = false;
 	for(unsigned int i = 0; i < m_lines.size(); ++i)	/// TODO: Add an if statement for multi-language file (html, php) with detection of the language of the current line
 	{
 		m_lines[i].setLanguage(m_extension);
-		inMultilineComment = m_lines[i].analyseLine(inMultilineComment);
+		if(i == 0)
+			m_lines[i].analyseLine();
+		else
+			m_lines[i].analyseLine(&m_lines[i-1]);
 		std::cout << i << '\t';
 		++stats[m_lines[i].getType()];
 		switch(m_lines[i].getType())

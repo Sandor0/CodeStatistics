@@ -16,11 +16,13 @@ class Line
 		virtual ~Line();
 
 		void setLanguage(std::string languageExtension);
-		bool analyseLine(bool inMultilineComment = false);
+		void analyseLine(Line *line = NULL);
 
 		int getType() const;
+		bool isInMultilineComment() const;
 
 		char operator[](int i);
+
 		friend std::ostream& operator<<(std::ostream& out, const Line& line)
 		{
 			return out << line.m_chars;
@@ -30,6 +32,7 @@ class Line
 		std::string m_chars;
 		std::string m_languageExtension;
 		int m_type;
+		bool m_isInMultilineComment;
 };
 
 
