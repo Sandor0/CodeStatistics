@@ -21,10 +21,12 @@ std::string trim(std::string s, const std::string& delimiters = " \f\n\r\t\v" )
 Line::Line()
 {
 	m_isInMultilineComment = false;
+	m_inString = 0;
 }
 Line::Line(std::string line) : m_chars(line)
 {
 	m_isInMultilineComment = false;
+	m_inString = 0;
 }
 
 Line::~Line()
@@ -36,6 +38,37 @@ void Line::setLanguage(std::string languageExtension)
 {
 	m_languageExtension = languageExtension;
 }
+
+std::string Line::removeString(std::string line)
+{
+	unsigned int quoteMarkCount = 0;
+	unsigned int lastFoundPos = 0;
+    while((lastFoundPos = line.find('"', lastFoundPos+1)) != line.npos) ++quoteMarkCount;
+    if(m_inString == 0 && quoteMarkCount == 0) return line;
+	bool inString = m_inString == 0 ? false : true;
+	for(unsigned int i = 0; i < line.size(); ++i)
+	{
+		if(inString)
+		{
+			if(line[i] == m_inString)
+			{
+				m_inString = 0;
+				inString = false;
+			}
+			line.erase(line.begin() + i--);
+		}
+		else
+		{
+			if(line[i] == '\'' || line[i] == '"')
+			{
+				m_inString = line[i];
+				inString = true;
+				line.erase(line.begin() + i--);
+			}
+		}
+	}
+	return line;
+}
 void Line::analyseLine(Line *previousLine)
 {
 	bool inMultilineComment = previousLine != NULL ? previousLine->isInMultilineComment() : false;
@@ -43,17 +76,20 @@ void Line::analyseLine(Line *previousLine)
 	std::string multilineTag = inMultilineComment ? "*/" : "/*";
 	std::string trimedLine = trim(m_chars);
 
-	int tagPosition = inMultilineComment ? trimedLine.size()-2 : 0;
-	unsigned int simpleCommentPosition = trimedLine.find("//");
-	unsigned int multilineCommentPosition = trimedLine.find(multilineTag);
-
 	if(trimedLine.empty())
 	{
 		m_type = EMPTY;
 		m_isInMultilineComment = inMultilineComment;
 		return;
 	}
-	else if(multilineCommentPosition != trimedLine.npos)
+
+	trimedLine = removeString(trimedLine);
+
+	int tagPosition = inMultilineComment ? trimedLine.size()-2 : 0;
+	unsigned int simpleCommentPosition = trimedLine.find("//");
+	unsigned int multilineCommentPosition = trimedLine.find(multilineTag);
+
+	if(multilineCommentPosition != trimedLine.npos)
 	{
 		if(multilineCommentPosition == tagPosition)
 			m_type = COMMENT;

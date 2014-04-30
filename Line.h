@@ -17,6 +17,7 @@ class Line
 
 		void setLanguage(std::string languageExtension);
 		void analyseLine(Line *line = NULL);
+		std::string removeString(std::string line);
 
 		int getType() const;
 		bool isInMultilineComment() const;
@@ -33,6 +34,7 @@ class Line
 		std::string m_languageExtension;
 		int m_type;
 		bool m_isInMultilineComment;
+		char m_inString;
 };
 
 

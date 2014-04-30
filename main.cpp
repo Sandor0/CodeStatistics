@@ -33,6 +33,6 @@ int main()
 	std::cout << "\n\n\n\n";
 	File test3("main.cpp");
 	std::cout << "\n\n\n\n";
-	File test4("Line.h");
+	File test4("Line.cpp");
 	return 0;
 }
