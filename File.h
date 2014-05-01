@@ -20,6 +20,7 @@ class File
 		std::string getFilename() const;
 		Line getLine(unsigned int i) const;
 		std::vector<Line> getLines() const;
+		unsigned int numberOfLines() const;
 
 		void analyseFile();
 

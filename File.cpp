@@ -29,6 +29,10 @@ std::vector<Line> File::getLines() const
 {
 	return m_lines;
 }
+unsigned int File::numberOfLines() const
+{
+	return m_lines.size();
+}
 
 void File::analyseFile()
 {

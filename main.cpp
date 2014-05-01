@@ -26,21 +26,39 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-	Project project("projet_test");
-	Project project2("projet_test2");
-	File file("File.h");
-	File file2("File.cpp");
-	File file3("Statistics.cpp");
-	File file4("Statistics.h");
+	Project bigProject("CodeStatistics");
+	Project crypto("Cryptographics");
+	std::vector<File> files;
+	files.push_back(File("File.h"));
+	files.push_back(File("File.cpp"));
+	files.push_back(File("Line.h"));
+	files.push_back(File("Line.cpp"));
+	files.push_back(File("Statistics.h"));
+	files.push_back(File("Statistics.cpp"));
+	files.push_back(File("Project.h"));
+	files.push_back(File("Project.cpp"));
+	files.push_back(File("main.cpp"));
+
+	std::vector<File> cryptoFiles;
+	cryptoFiles.push_back(File("../Cryptographie/Cryptography.cpp"));
+	cryptoFiles.push_back(File("../Cryptographie/Cryptography.h"));
+	cryptoFiles.push_back(File("../Cryptographie/Others.cpp"));
+	cryptoFiles.push_back(File("../Cryptographie/Others.h"));
+	cryptoFiles.push_back(File("../Cryptographie/StatsFile.cpp"));
+	cryptoFiles.push_back(File("../Cryptographie/StatsFile.h"));
+	cryptoFiles.push_back(File("../Cryptographie/Steganography.cpp"));
+	cryptoFiles.push_back(File("../Cryptographie/Steganography.h"));
+	cryptoFiles.push_back(File("../Cryptographie/main.cpp"));
+
 	Statistics stats;
 
-	project.addFile(file);
-	project.addFile(file2);
-	project2.addFile(file3);
-	project2.addFile(file4);
+	for(int i = 0; i < files.size(); ++i)
+		bigProject.addFile(files[i]);
+	for(int i = 0; i < cryptoFiles.size(); ++i)
+		crypto.addFile(cryptoFiles[i]);
 
-	stats.addProject(project);
-	stats.addProject(project2);
+	stats.addProject(bigProject);
+	stats.addProject(crypto);
 
 	stats.generateProjectStats();
 
