@@ -24,6 +24,7 @@ class Line
 
 		char operator[](int i);
 
+		unsigned int size() { return m_chars.size(); }
 		friend std::ostream& operator<<(std::ostream& out, const Line& line)
 		{
 			return out << line.m_chars;

@@ -1,8 +1,8 @@
 #include <iostream>
 #include <vector>
-#include <algorithm>
 
 #include "File.h"
+#include "Statistics.h"
 
 /**
  * 1. Nombre de lignes 	| de code 				  |	d'un | projet  |
@@ -24,10 +24,11 @@
 
 using namespace std;
 
-
-int main()
+int main(int argc, char *argv[])
 {
-	File test("File.h");
+	File file("File.h");
+	Statistics stats(file);
+	stats.showFileStats();
 	std::cout << "\n\n\n\n";
 	File test2("File.cpp");
 	std::cout << "\n\n\n\n";

@@ -15,11 +15,24 @@ File::~File()
 	//dtor
 }
 
+std::string File::getFilename() const
+{
+	return m_filename;
+}
+Line File::getLine(int i) const
+{
+	if(i >= 0 && i < m_lines.size())
+		return m_lines[i];
+}
+std::vector<Line> File::getLines() const
+{
+	return m_lines;
+}
 
 void File::analyseFile()
 {
 	std::map<int, int> stats;
-	this->getLines();
+	this->extractLines();
 	for(unsigned int i = 0; i < m_lines.size(); ++i)	/// TODO: Add an if statement for multi-language file (html, php) with detection of the language of the current line
 	{
 		m_lines[i].setLanguage(m_extension);
@@ -56,7 +69,7 @@ void File::analyseFile()
 	std::cout << "EMPTY : " << stats[EMPTY] << '\n';
 }
 
-void File::getLines()
+void File::extractLines()
 {
 	std::string rawFile = readFile(m_filename);
 	std::vector<std::string> lines;
