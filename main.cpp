@@ -24,7 +24,52 @@
 
 using namespace std;
 
+void test();
+void usage(std::string programName);
+void exec(int argc, char *argv[]);
+
+
 int main(int argc, char *argv[])
+{
+	if(argc > 1)
+		exec(argc, argv);
+	else
+		test();
+	return 0;
+}
+
+void exec(int argc, char *argv[])
+{
+	bool fullStats = false;
+	if(argv[1] == "help" || argv[1] == "usage" || argc < 3)
+	{
+		usage(argv[0]);
+		return;
+	}
+	Project project;
+	Statistics stats;
+    if(argv[1] == "d")
+		fullStats = true;
+	else if(argv[1] == "s")
+		fullStats = false;
+	for(int i = 2; i < argc; ++i)
+		project.addFile(File(argv[i]));
+	stats.addProject(project);
+	stats.generateProjectStats();
+	if(fullStats)
+		stats.showProjectStats();
+	else
+		stats.showWholeProjectStats();
+}
+
+void usage(std::string programName)
+{
+	std::cout << "Usage : " << programName << " [ help | usage | f | s ] { files paths }" << '\n';
+	std::cout << "\tf - full output, stats for each file" << '\n';
+	std::cout << "\ts - simple output, global stats" << '\n';
+}
+
+void test()
 {
 	Project bigProject("CodeStatistics");
 	Project crypto("Cryptographics");
@@ -62,13 +107,5 @@ int main(int argc, char *argv[])
 
 	stats.generateProjectStats();
 
-	stats.showWholeProjectStats();
-
-
-	/*std::cout << "\n\n\n\n";
-	std::cout << "\n\n\n\n";
-	File test3("main.cpp");
-	std::cout << "\n\n\n\n";
-	File test4("Line.cpp");*/
-	return 0;
+	stats.showProjectStats();
 }
