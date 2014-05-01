@@ -5,46 +5,98 @@ Statistics::Statistics()
 	//ctor
 }
 
-Statistics::Statistics(File &file)
-{
-    m_file = file;
-    this->generateStats();
-}
-
 Statistics::~Statistics()
 {
 	//dtor
 }
 
-void Statistics::generateStats()
+void Statistics::addProject(Project project)
 {
-    std::vector<Line> lines = m_file.getLines();
-    m_filestats.maxLinesLength = 0;
-    m_filestats.minLinesLength = lines[0].size();
-    m_filestats.averageLinesLength = 0;
+	m_projects[project.getProjectName()] = project;
+}
+
+void Statistics::generateProjectStats()
+{
+	for(std::map<std::string, Project>::iterator it = m_projects.begin(); it != m_projects.end(); ++it)
+	{
+		generateProjectStats(it->first);
+	}
+}
+void Statistics::generateProjectStats(std::string projectName)
+{
+	std::map<std::string, File> files = m_projects[projectName].getMappedFiles();
+	for(std::map<std::string, File>::iterator it = files.begin(); it != files.end(); ++it)
+	{
+		generateFileStats(projectName, it->first);
+	}
+	/// TODO: generate project stats, not only file stats
+}
+void Statistics::generateFileStats(std::string projectName, std::string filename)
+{
+    std::vector<Line> lines = m_projects[projectName][filename].getLines();
+    FileStats filestats;
+    filestats.maxLinesLength = 0;
+    filestats.minLinesLength = lines[0].size();
+    filestats.averageLinesLength = 0;
     for(unsigned int i = 0; i < lines.size(); ++i)
 	{
 		if(lines[i].getType() != EMPTY)
 		{
-			if(lines[i].size() > m_filestats.maxLinesLength)
-				m_filestats.maxLinesLength = lines[i].size();
-			else if(lines[i].size() < m_filestats.minLinesLength)
-				m_filestats.minLinesLength = lines[i].size();
-			m_filestats.averageLinesLength+=lines[i].size();
+			if(lines[i].size() > filestats.maxLinesLength)
+				filestats.maxLinesLength = lines[i].size();
+			else if(lines[i].size() < filestats.minLinesLength)
+				filestats.minLinesLength = lines[i].size();
+			filestats.averageLinesLength+=lines[i].size();
 		}
-		++m_filestats.lineType[lines[i].getType()];
+		++filestats.linesType[lines[i].getType()];
 	}
-	m_filestats.averageLinesLength/=lines.size();
+	filestats.averageLinesLength/=lines.size();
+
+	m_projectsStats[projectName].fileStats[filename] = filestats;
 }
 
-void Statistics::showFileStats()
+
+void Statistics::showProjectStats()
 {
-    std::cout << "Stats for " << m_file.getFilename() << '\n';
-	std::cout << "Max lines length : " << m_filestats.maxLinesLength << '\n';
-	std::cout << "Min lines length : " << m_filestats.minLinesLength << '\n';
-	std::cout << "Average lines length : " << m_filestats.averageLinesLength << '\n';
-	std::cout << "Line of code : " << m_filestats.lineType[CODE] << '\n';
-	std::cout << "Line of code and comment : " << m_filestats.lineType[CODE_AND_COMMENT] << '\n';
-	std::cout << "Line of comment : " << m_filestats.lineType[COMMENT] << '\n';
-	std::cout << "Empty line : " << m_filestats.lineType[EMPTY] << '\n';
+	for(std::map<std::string, Project>::iterator it = m_projects.begin(); it != m_projects.end(); ++it)
+	{
+        showProjectStats(it->first);
+	}
+}
+void Statistics::showProjectStats(std::string projectName)
+{
+	std::cout << "Stats for project " << projectName << " :" << '\n';
+	std::cout << "No project stats yet." << '\n';
+}
+void Statistics::showWholeProjectStats()
+{
+	for(std::map<std::string, Project>::iterator it = m_projects.begin(); it != m_projects.end(); ++it)
+	{
+        showWholeProjectStats(it->first);
+	}
+}
+void Statistics::showWholeProjectStats(std::string projectName)
+{
+	showProjectStats(projectName);
+	std::map<std::string, File> files = m_projects[projectName].getMappedFiles();
+	for(std::map<std::string, File>::iterator it = files.begin(); it != files.end(); ++it)
+	{
+        showFileStats(projectName, it->first);
+	}
+}
+
+void Statistics::showFileStats(std::string projectName, std::string filename)
+{
+	FileStats fileStats = m_projectsStats[projectName].fileStats[filename];
+	std::cout << "Stats for " << filename  << " : " << '\n';
+	std::cout << "\tLine of code : " << fileStats.linesType[CODE] << '\n';
+	std::cout << "\tLine of code and comment : " << fileStats.linesType[CODE_AND_COMMENT] << '\n';
+	std::cout << "\tLine of comment : " << fileStats.linesType[COMMENT] << '\n';
+	std::cout << "\tEmpty line : " << fileStats.linesType[EMPTY] << '\n';
+	std::cout << "\t---" << '\n';
+	std::cout << "\tMax lines length : " << fileStats.maxLinesLength << '\n';
+	std::cout << "\tMin lines length : " << fileStats.minLinesLength << '\n';
+	std::cout << "\tAverage lines length : " << fileStats.averageLinesLength << '\n';
+
+	std::cout << '\n';
 }

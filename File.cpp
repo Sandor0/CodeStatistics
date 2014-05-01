@@ -19,10 +19,11 @@ std::string File::getFilename() const
 {
 	return m_filename;
 }
-Line File::getLine(int i) const
+Line File::getLine(unsigned int i) const
 {
 	if(i >= 0 && i < m_lines.size())
 		return m_lines[i];
+	else return Line("ERROR: Index out of range.");
 }
 std::vector<Line> File::getLines() const
 {
@@ -40,8 +41,10 @@ void File::analyseFile()
 			m_lines[i].analyseLine();
 		else
 			m_lines[i].analyseLine(&m_lines[i-1]);
-		std::cout << i << '\t';
 		++stats[m_lines[i].getType()];
+
+		/*
+		std::cout << i << '\t';
 		switch(m_lines[i].getType())
 		{
 			case CODE:
@@ -61,12 +64,15 @@ void File::analyseFile()
 				break;
 		}
 		std::cout << '\t' << m_lines[i] << '\n';
+		//*/
 	}
+	/*
 	std::cout << '\n';
 	std::cout << "CODE : " << stats[CODE] << '\n';
 	std::cout << "COMMENT : " << stats[COMMENT] << '\n';
 	std::cout << "CODE AND COMMENT : " << stats[CODE_AND_COMMENT] << '\n';
 	std::cout << "EMPTY : " << stats[EMPTY] << '\n';
+	//*/
 }
 
 void File::extractLines()

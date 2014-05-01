@@ -18,7 +18,7 @@ class File
 		virtual ~File();
 
 		std::string getFilename() const;
-		Line getLine(int i) const;
+		Line getLine(unsigned int i) const;
 		std::vector<Line> getLines() const;
 
 		void analyseFile();
